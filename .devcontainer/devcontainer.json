@@ -1,0 +1,12 @@
+{
+    // 配置文件在github上的显示名称
+    "name": "userlogin-devcontainer",
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "features": {},
+    // 设置远程登录时的用户
+    "remoteUser": "root",
+    "containerEnv": {},
+    "postStartCommand": {},
+    // 配置自定义容器启动时执行的脚本
+    "onCreateCommand": "bash .devcontainer/env.sh"
+}
