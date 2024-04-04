@@ -5,6 +5,7 @@
     "features": {},
     // 设置远程登录时的用户
     "remoteUser": "root",
+    "containerUser": "root",
     "containerEnv": {},
     "postStartCommand": {},
     // 配置自定义容器启动时执行的脚本
