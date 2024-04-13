@@ -1,31 +1,46 @@
 from flask import Flask, make_response, jsonify, request
+from flask_cors import CORS
+from auth import runsqlite
 
 
 app = Flask(__name__)
+# 设置整体跨域问题
+CORS(app) 
 
 
 @app.route("/api/login", methods=["POST"])
 def login():
     response_data = {
-        "status": "200",
+        "status": "",
         "Content-Type": "text/json",
-        "messages": "login success",
+        "messages": "",
     }
-
     if request.is_json:
-        user = request.json.get("username")
+        username = request.json.get("username")
         password = request.json.get("password")
-        # 这里可以添加验证用户名和密码的逻辑
+        # 这里添加验证用户名和密码的逻辑
         # ...
-        return jsonify({"message": "Login successful"}), 200
-    return jsonify({"message": "Invalid login details"}), 401
 
-    res = make_response(jsonify(response_data))  # 设置响应体
-    res.status = "200"  # 设置状态码
-    res.headers["Access-Control-Allow-Origin"] = "*"  # 设置允许跨域
-    res.headers["Access-Control-Allow-Methods"] = "PUT,GET,POST,DELETE"
-    return res
+        sql = runsqlite.runsqlite("UserAuthDB", "select", username, password)
+
+        if sql:
+            print(sql)
+            response_data['status'] = '200'
+            response_data['messages'] = 'login success'
+        else:
+            print("xxx")
+            response_data['status'] = '500'
+            response_data['messages'] = 'login failed'
+            
+        res = make_response(jsonify(response_data))  # 设置响应体
+        # res.status = "200"  # 设置状态码
+        # res.headers["Access-Control-Allow-Origin"] = "*"  # 设置允许跨域
+        # res.headers["Access-Control-Allow-Methods"] = "PUT,GET,POST,DELETE"
+        return res
 
 
-if __name__ == "__main__":
+    
+
+
+def runapp():
     app.run(port=5000, debug=True)

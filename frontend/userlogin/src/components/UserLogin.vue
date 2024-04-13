@@ -2,13 +2,15 @@
 import axios from 'axios';
 import { reactive } from 'vue';
 
-const loginForm = reactive({
+let loginForm = reactive({
   username: '',
   password: ''
 });
 
-const login = async () => {
+const doLogin = async () => {
   try {
+    
+    console.log(loginForm);
     const response = await axios.post('http://127.0.0.1:5000/api/login', loginForm);
     // 登录成功处理逻辑，例如保存token等
     console.log(response.data);
@@ -25,7 +27,7 @@ const login = async () => {
     {{ loginForm.username }}
     <input v-model="loginForm.username" type="text" placeholder="Username" />
     <input v-model="loginForm.password" type="password" placeholder="Password" />
-    <button @click="login">Login</button>
+    <button @click="doLogin">Login</button>
   </div>
 </template>
 

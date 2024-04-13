@@ -48,5 +48,7 @@ pip freeze > requirements.txt
 # 列出虚拟环境所有项目依赖的文本文件
 # pip list
 
+# 依赖
+# pip3 install flask-cors # 解决跨域
 
 

@@ -1,8 +1,11 @@
 import sqlite3
 from os import path
 
+
+db_file = path.dirname(__file__) + '/users.db'
+
 def init_db() :
-    db_file = path.dirname(__file__) + '/users.db'
+    
     if path.exists(db_file):
         print('Database already exists. Skip creation.')
         
@@ -13,25 +16,30 @@ def init_db() :
         # 创建一个 cursor 对象
         cursor = conn.cursor()
         
-        # 创建表
-        cursor.execute('''CREATE TABLE IF NOT EXISTS users
-                        (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        username TEXT UNIQUE NOT NULL,
-                        password TEXT NOT NULL,
-                        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                        token    TEXT)
-                        ;''')
-        
-        # 插入数据
-        cursor.execute("INSERT INTO users (username, password, token) VALUES ('root', 'root', 'root')")
-        
-        # 查询数据
-        cursor.execute('SELECT * FROM users')
 
+        # 创建表
+        create_auth = "CREATE TABLE IF NOT EXISTS UserAuthDB(" \
+            "id INTEGER primary key AUTOINCREMENT not null unique," \
+            "username varchar(64) not null unique," \
+            "password varchar(64) not null" \
+            ")"
+        # 插入数据
+        cursor.execute(create_auth)
+        cursor.execute("INSERT INTO UserAuthDB (username, password) VALUES ('root', 'root')")
+
+        create_session = "CREATE TABLE IF NOT EXISTS SessionAuthDB(" \
+                        "id INTEGER primary key AUTOINCREMENT not null unique," \
+                        "username varchar(64) not null unique," \
+                        "token varchar(128) not null unique," \
+                        "invalid_date int not null" \
+                        ")"
+
+        cursor.execute(create_session)
+        
         # 打印查询结果
-        rows = cursor.fetchall()
-        for row in rows:
-            print(row)
+        # rows = cursor.fetchall()
+        # for row in rows:
+        #     print(row)
 
         conn.commit()
         # 关闭连接
@@ -39,4 +47,3 @@ def init_db() :
         
         print("init db success.")
     
-init_db()
