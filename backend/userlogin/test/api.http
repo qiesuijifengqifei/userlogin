@@ -1,8 +1,29 @@
+
 POST http://127.0.0.1:5000/api/login HTTP/1.1
 content-type: application/json
 
 {
     "username":"root",
-    "password":"xxx",
+    "password":"root",
+    "age":"26"
+}
+
+
+POST http://127.0.0.1:5000/api/home HTTP/1.1
+content-type: application/json
+token:MOR1mgUPqFoXLsB8hv4ZdnaciwT9Qrxk
+
+{
+
+    "age":"26"
+}
+
+POST http://127.0.0.1:5000/api/changepassword HTTP/1.1
+content-type: application/json
+token:iAwyfx3KSG9PNLjcHOXgqV1oEhFtI7mz
+
+{
+    "username":"root",
+    "mdf_password":"root",
     "age":"26"
 }
