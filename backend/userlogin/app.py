@@ -18,6 +18,17 @@ def login_check(func):
     def wrapper(*args, **kwargs):
         print("处理登录逻辑部分: {}".format(request.url))
 
+        response_data = {
+            "status": "",
+            "message": "",
+            "data": {
+                "user_id": "",
+                "username": "",
+                "isvalid ": False,
+                "token": ""
+            }
+        }
+
         # 得到token 验证是否登陆了,且token没有过期
         local_timestamp = int(time.time())
         get_token = request.headers.get("token")
@@ -32,14 +43,19 @@ def login_check(func):
                     # 删除原来的Token
                     delete = RunSqlite("SessionAuthDB","delete",f"token='{get_token}'","none")
                     if delete == True:
-                        return json.dumps("{'token': 'Token 已过期,请重新登录获取'}", ensure_ascii=False)
+                        response_data["status"] = 200
+                        response_data["message"] = 'Token 已过期,请重新登录获取'
+                        return json.dumps(response_data, ensure_ascii=False)
                     else:
-                        return json.dumps("{'token': '数据库删除异常,请联系开发者'}", ensure_ascii=False)
+                        response_data["status"] = 500
+                        response_data["message"] = '数据库删除异常,请联系开发者'
+                        return json.dumps(response_data, ensure_ascii=False)
                 else:
                     # 验证Token是否一致
                     if select[0][0] == get_token:
                         print("Token验证正常,继续执行function_ptr指向代码.")
                         # 返回到原函数
+                        response_data["data"]["isvalid"] = True
                         return func(*args, **kwargs)
                     else:
                         print("Token验证错误 {}".format(select))
@@ -47,6 +63,7 @@ def login_check(func):
 
             # 装饰器调用原函数
             # function_ptr = func(*args, **kwargs)
+            
 
         return json.dumps("{'token': 'Token 验证失败'}", ensure_ascii=False)
     return wrapper
@@ -66,63 +83,128 @@ def login():
 
             if is_true == True:
 
-                # 相应头的完整写法
+                # 响应头的完整写法
                 response_data = {
-                    "token": "",
-                    "message": ""
+                    "status": "",
+                    "message": "",
+                    "data": {
+                        "user_id": "",
+                        "username": username,
+                        "token": ""
+                    }
                 }
 
                 # 查询是否存在该用户
                 select = RunSqlite("UserAuthDB", "select", "username,password", f"username='{username}'")
-                if select[0][0] == username and select[0][1] == password:
-                    # 查询Session列表是否存在
-                    select_session = RunSqlite("SessionAuthDB","select","token",f"username='{username}'")
-                    if select_session != []:
-                        response_data["token"] = select_session[0][0]
-                        response_data["message"] = 'token already exists'
-                        res = make_response(jsonify(response_data))
-                        res.headers["Content-Type"] = "text/json; charset=utf-8"
-                        return res
+                if len(select) != 0:
+                    if select[0][0] == username and select[0][1] == password:
 
-                    # Session不存在则需要重新生成
-                    else:
-                        # 生成并写入token和过期时间戳
-                        token = ''.join(random.sample(string.ascii_letters + string.digits, 32))
-
-                        # 设置xxx秒周期,过期时间
-                        time_stamp = int(time.time()) + 360000
-
-                        insert = RunSqlite("SessionAuthDB", "insert", "username,token,invalid_date", f"'{username}','{token}',{time_stamp}")
-                        if insert == True:
-                            response_data["token"] = token
-                            response_data["message"] = 'token generated'
+                        # 设置 token 有效时间,单位(秒)
+                        time_stamp = int(time.time()) + 60*60*100
+                        # 查询Session列表是否存在
+                        select_session = RunSqlite("SessionAuthDB","select","token",f"username='{username}'")
+                        if select_session != []:
+                            update = RunSqlite("SessionAuthDB", "update", f"username='{username}'",f"invalid_date='{time_stamp}'")
+                            if update == True:
+                                response_data["message"] = "token已存在,更新 token 过期时间成功"
+                            else:
+                                response_data["message"] = "token已存在,更新 token 过期时间失败"
+                            response_data["status"] = '200'
+                            print(time_stamp)
+                            response_data["data"]["token"] = select_session[0][0]
                             res = make_response(jsonify(response_data))
                             res.headers["Content-Type"] = "text/json; charset=utf-8"
                             return res
-                            
-                else:
-                    return json.dumps("{'message': '用户名或密码错误'}", ensure_ascii=False)
-            else:
-                return json.dumps("{'message': '输入参数不可用'}", ensure_ascii=False)
 
-    return json.dumps("{'message': '未知错误'}", ensure_ascii=False)
+                        # Session不存在则需要重新生成
+                        else:
+                            # 生成并写入token和过期时间戳
+                            token = ''.join(random.sample(string.ascii_letters + string.digits, 32))
+
+                            insert = RunSqlite("SessionAuthDB", "insert", "username,token,invalid_date", f"'{username}','{token}',{time_stamp}")
+                            if insert == True:
+                                response_data["status"] = '200'
+                                response_data["message"] = 'token generated'
+                                response_data["data"]["token"] = token
+                                res = make_response(jsonify(response_data))
+                                res.headers["Content-Type"] = "text/json; charset=utf-8"
+                                return res
+                                
+                    else:
+                        response_data["status"] = '400'
+                        response_data["message"] = '用户名或密码错误'
+                        return json.dumps(response_data, ensure_ascii=False)
+            else:
+                response_data["status"] = '400'
+                response_data["message"] = '输入参数不可用'
+                return json.dumps(response_data, ensure_ascii=False)
+
+    response_data["status"] = '400'
+    response_data["message"] = '未知错误'
+    return json.dumps(response_data, ensure_ascii=False)
+
+# 用户登出
+@app.route("/api/logout",methods=["POST"])
+@login_check
+def logout():
+    if request.method == "POST":
+        response_data = {
+            "status": "",
+            "message": ""
+        }
+        get_token = request.headers.get("token")
+        # 清除token
+        delete = RunSqlite("SessionAuthDB","delete",f"token='{get_token}'","none")
+        if delete == True:
+            response_data["status"] = 200
+            response_data["message"] = 'Token 已清除'
+            return json.dumps(response_data, ensure_ascii=False)
+        else:
+            response_data["status"] = 500
+            response_data["message"] = '数据库删除异常,请联系开发者'
+            return json.dumps(response_data, ensure_ascii=False)
 
 
 
 # 获取参数函数
-@app.route("/api/home", methods=["POST"])
+@app.route("/api/userinfo", methods=["POST"])
 @login_check
 def GetPage():
     if request.method == "POST":
         if request.is_json:
             get_token = request.headers.get("token")
             select_name = RunSqlite("SessionAuthDB","select","username",f"token='{get_token}'")
-
+            select_invalid_date= RunSqlite("SessionAuthDB","select","invalid_date",f"token='{get_token}'")
+            
             # 相应头的完整写法
             response_data = {
-                "username": ""
+                "status": "",
+                "message": "",
+                "data": {
+                    "user_id": "",
+                    "username": "",
+                    "isvalid": False,
+                    "token": ""
+                }
             }
-            response_data["username"] = select_name[0][0]
+
+            invalid_time = select_invalid_date[0][0] - int(time.time())
+
+            if invalid_time > 1 and select_name[0][0] != "":
+                # 更新 token 有效时间,单位(秒)
+                if invalid_time < 60*60*48:
+                    time_stamp = int(time.time()) + 60*60*100
+                    update = RunSqlite("SessionAuthDB", "update", f"username='{select_name}'",f"invalid_date='{time_stamp}'")
+                    if update == True:
+                        response_data["message"] = "更新 token 过期时间成功"
+                    else:
+                        response_data["message"] = "更新 token 过期时间失败"
+                response_data["data"]["username"] = select_name[0][0]
+                response_data["data"]["isvalid"] = True
+            else:
+                response_data["message"] = "token 验证失败,请重新登录"
+                response_data["data"]["isvalid"] = False
+
             res = make_response(jsonify(response_data))
             res.headers["Content-Type"] = "text/json; charset=utf-8"
             res.status = 200
@@ -158,6 +240,7 @@ def GetPage():
 #         else:
 #             return json.dumps("{'message': '传入参数个数不正确'}", ensure_ascii=False)
 #     return json.dumps("{'message': '未知错误'}", ensure_ascii=False)
+
 
 # 密码修改函数
 @app.route("/api/changepassword", methods=["POST"])
@@ -196,4 +279,4 @@ def modify():
     return json.dumps("{'message': '未知错误'}", ensure_ascii=False)
 
 def runapp():
-    app.run(port=5000, debug=True)
+    app.run(port=8000, debug=True)

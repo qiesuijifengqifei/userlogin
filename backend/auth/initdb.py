@@ -27,6 +27,7 @@ def init_db() :
         cursor.execute(create_auth)
         cursor.execute("INSERT INTO UserAuthDB (username, password) VALUES ('root', 'root')")
 
+        # 创建表
         create_session = "CREATE TABLE IF NOT EXISTS SessionAuthDB(" \
                         "id INTEGER primary key AUTOINCREMENT not null unique," \
                         "username varchar(64) not null unique," \

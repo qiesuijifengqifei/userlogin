@@ -1,6 +1,6 @@
 
 # 安装虚拟环境包
-apt install python3.8-venv
+apt install -y python3-venv
 
 # 创建虚拟环境
 python3 -m venv .venv
@@ -42,11 +42,11 @@ mkdir templates static && echo '<div id="app">flask</div>' > templates/index.htm
 # python3 app.py 
 
 # 可通过文件导入项目依赖包
-pip freeze > requirements.txt
-# pip install -r requirements.txt
+pip3 freeze > requirements.txt
+# pip3 install -r requirements.txt
 
 # 列出虚拟环境所有项目依赖的文本文件
-# pip list
+# pip3 list
 
 # 依赖
 # pip3 install flask-cors # 解决跨域

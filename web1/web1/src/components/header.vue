@@ -1,12 +1,10 @@
 <script setup lang="ts">
 
-import UserLogin from './components/UserLogin.vue'
-
 </script>
 
 <template>
-
-  <UserLogin />
+    header
+    <hr />
 </template>
 
 <style scoped>

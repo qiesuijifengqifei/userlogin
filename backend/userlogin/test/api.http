@@ -1,5 +1,5 @@
 
-POST http://127.0.0.1:5000/api/login HTTP/1.1
+POST http://127.0.0.1:8000/api/login HTTP/1.1
 content-type: application/json
 
 {
@@ -8,8 +8,17 @@ content-type: application/json
     "age":"26"
 }
 
+POST http://127.0.0.1:8000/api/logout HTTP/1.1
+content-type: application/json
+token: Rr1DMQmzfqtEkIYO7c2NbA6iLFynPTJxx
 
-POST http://127.0.0.1:5000/api/home HTTP/1.1
+{
+    "username":"root",
+    "age":"26"
+}
+
+
+POST http://127.0.0.1:8000/api/userinfo HTTP/1.1
 content-type: application/json
 token:MOR1mgUPqFoXLsB8hv4ZdnaciwT9Qrxk
 
@@ -18,7 +27,7 @@ token:MOR1mgUPqFoXLsB8hv4ZdnaciwT9Qrxk
     "age":"26"
 }
 
-POST http://127.0.0.1:5000/api/changepassword HTTP/1.1
+POST http://127.0.0.1:8000/api/changepassword HTTP/1.1
 content-type: application/json
 token:iAwyfx3KSG9PNLjcHOXgqV1oEhFtI7mz
 
