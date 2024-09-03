@@ -5,7 +5,8 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   server: {
-    port: 8081,   // 配置 vite 端口
+    host: '0.0.0.0',        // 配置使用 ip 能访问
+    port: 8081,             // 配置 vite 端口
     strictPort: true,
     proxy: {
       '/flask': {

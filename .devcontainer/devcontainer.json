@@ -1,13 +1,33 @@
 {
     // 配置文件在github上的显示名称
     "name": "userlogin-devcontainer",
-    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    // 配置 image 会导致镜像占用 codespace 存储空间
+    // "image": "mcr.microsoft.com/devcontainers/universal:2",
     "features": {},
+    // "forwardPorts": [8000, 8081, 8082],
+    "customizations": {
+        // Configure properties specific to VS Code.
+        "vscode": {
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "ms-python.black-formatter",
+                "MS-CEINTL.vscode-language-pack-zh-hans",
+                "yzhang.markdown-all-in-one",
+                "ms-python.vscode-pylance",
+                "ms-python.python",
+                "ms-python.debugpy",
+                "humao.rest-client",
+                "foxundermoon.shell-format",
+                "yy0931.vscode-sqlite3-editor",
+                "Vue.volar"
+            ]
+        }
+    },
     // 设置远程登录时的用户
     "remoteUser": "root",
     "containerUser": "root",
     "containerEnv": {},
     "postStartCommand": {},
     // 配置自定义容器启动时执行的脚本
-    "onCreateCommand": "bash .devcontainer/env.sh"
+    "onCreateCommand": "bash .devcontainer/startup.sh"
 }

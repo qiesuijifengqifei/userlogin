@@ -5,15 +5,13 @@ test "$BASH_SOURCE" = "$0" && echo "Script is being run, should be sourced" && e
 # test $RUN_FLAG && echo "The environment has been loaded, do nothing" && return || RUN_FLAG=true
 
 ROOT_PATH=$(dirname $(readlink -f $BASH_SOURCE))
+PATH=$PATH:${ROOT_PATH}/runtime/runpath
 
-# function startup(){(
-# 	PATH=$PATH:$ROOT_PATH
-
-# )}
 function run_backend()
 {(
     source ${ROOT_PATH}/backend/.venv/bin/activate
     python3 ${ROOT_PATH}/backend/manage.py &
+    deactivate
 )}
 
 function run_fronted()
@@ -35,7 +33,6 @@ function run_all()
     run_backend
     run_fronted
     run_web1
-    deactivate
 )}
 
 function stop_run()
@@ -62,19 +59,17 @@ function stop_run()
 function init_env()
 {(
     set -e
-    apt install -y python3 python3-venv python3-pip nodejs npm
-    # 配置 python3 开发环境
-    cd ${ROOT_PATH}/backend/
-    source ${ROOT_PATH}/backend/.venv/bin/activate
-    python3 -m venv .venv
-    source .venv/bin/activate
+    # 安装 python3 backend 运行依赖
+    python3 -m venv ${ROOT_PATH}/backend/.venv
     echo "
     [global]                                                                    
     index-url = http://pypi.tuna.tsinghua.edu.cn/simple
     trusted-host = pypi.tuna.tsinghua.edu.cn
-    " > .venv/pip.conf
-    pip3 install -r requirements.txt
+    " > ${ROOT_PATH}/backend/.venv/pip.conf
+    source ${ROOT_PATH}/backend/.venv/bin/activate
+    pip3 install -r ${ROOT_PATH}/backend/requirements.txt
     deactivate
+    
     # 配置 vue3 frontend 开发环境
     cd ${ROOT_PATH}/frontend/userlogin
     npm install
