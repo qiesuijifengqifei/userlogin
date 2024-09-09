@@ -27,9 +27,23 @@
     init_env            # 安装项目调试运行的依赖
     run_all             # 运行项目 backend , frontend , web1
     stop_run            # 停止运行的所有项目
+    build_all           # 编译所有项目
+
+##### 编译
+build , runtime 为编译生成目录  
+将 frontend 项目编译部署到 backend 项目中 ( vue3 项目部署到 flask )  
+flask 使用 pyinstaller 打包成一个可执行文件  
+
 
 # 访问
-    默认使用端口: 8000 , 8081 , 8082
-    http://127.0.0.1:8082/web1/home
+    debug:
+        backend: 8000
+        frontend: 8081
+        web1: 8082
+    
+    deployed:
+    http://127.0.0.1:8000
+
+    注: 可通过 config.ini 文件设置启动端口
     
 

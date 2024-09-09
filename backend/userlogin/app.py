@@ -2,15 +2,21 @@ import json
 import random
 import string
 import time
-from flask import Flask, make_response, jsonify, request, Response
+from flask import Flask, make_response, jsonify, request, Response, render_template
 from flask_cors import CORS
 from auth.runsqlite import CheckParameters,RunSqlite
 from functools import wraps
+import config.config
 
+app = Flask(__name__, template_folder='frontend', static_url_path='/', static_folder='frontend')
+# static_url_path 静态文件访问路径
+# static_folder flask读取静态文件路径
+CORS(app)       # 设置整体跨域问题
 
-app = Flask(__name__)
-# 设置整体跨域问题
-CORS(app) 
+# 登录页面
+@app.route("/")
+def index():
+    return render_template('index.html')
 
 # 检查登录状态 token是否过期的装饰器
 def login_check(func):
@@ -110,7 +116,6 @@ def login():
                             else:
                                 response_data["message"] = "token已存在,更新 token 过期时间失败"
                             response_data["status"] = '200'
-                            print(time_stamp)
                             response_data["data"]["token"] = select_session[0][0]
                             res = make_response(jsonify(response_data))
                             res.headers["Content-Type"] = "text/json; charset=utf-8"
@@ -279,4 +284,4 @@ def modify():
     return json.dumps("{'message': '未知错误'}", ensure_ascii=False)
 
 def runapp():
-    app.run(port=8000, debug=True)
+    app.run(host='0.0.0.0', port=config.config.flask_port, debug=config.config.flask_debug)

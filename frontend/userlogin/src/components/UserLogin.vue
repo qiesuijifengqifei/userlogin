@@ -1,43 +1,37 @@
 <script setup lang="ts">
-import axios from 'axios';
-import { ref , reactive } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import { useUserStore } from '../stores/user.ts';
+import { request } from '../utils/request.ts'
 
 let rturl = "";
 if ( window.location.href.indexOf("?") != -1 ){
   rturl = window.location.href.split("?")[1].split("=")[1]
-  console.log(rturl)
-
+  // console.log(rturl)
 }
 
+// let current_url = window.location.href.split("//")[1]
+// console.log(process.env)                           // 客户端不能获取到此值
+// console.log(import.meta.env.VITE_PROXY_URL)        // 客户端能获取到此值
+
 const userStore = useUserStore()
-let loginForm = reactive({
-  username: '',
-  password: ''
-});
-const rememberme = ref(userStore.userinfo.rememberme)
-
 const doLogin = async () => {
-
-  try {
-    // console.log(loginForm);
-    const response = await axios.post('/flask/api/login', userStore.userinfo);
+  try {    
+    const response = await request.post('/api/login', userStore.userinfo);
     // 登录成功处理逻辑，例如保存token等
-    if (response.data.status == '200') {
+    if (response.status == 200) {
       ElMessage({
         message: '登录成功',
         type: 'success',
         plain: true,
       })
-      console.log(response)
+      userStore.userinfo.token = response.data.token
       if (! userStore.userinfo.rememberme) {
-        // userStore.userinfo.rememberme = rememberme
-        // userStore.userinfo.username = loginForm.username
         userStore.userinfo.password = ""
       }
-      rturl = rturl + "?token=" + response.data.data.token
-      window.location.replace(rturl);
+      if (rturl !== "") {
+        rturl = rturl + "?token=" + response.data.token
+        window.location.replace(rturl);
+      }
       
     }
     else {

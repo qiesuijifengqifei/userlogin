@@ -1,10 +1,11 @@
-.venv
-
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 
-__pycache__
+# debug
+.venv
+**/__pycache__
+# userlogin/frontend
 
-auth/users.db
+# data
+data

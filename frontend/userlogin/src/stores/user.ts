@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 
-export const useUserStore = defineStore(
+const useUserStore = defineStore(
   'user',
   () => {
     const userinfo = reactive({
       username: '',
       password: '',
+      token: '',
       rememberme: false
     })
     return { 
@@ -17,3 +18,5 @@ export const useUserStore = defineStore(
     persist: true,
   },
 )
+
+export { useUserStore }

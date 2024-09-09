@@ -5,7 +5,7 @@ test "$BASH_SOURCE" = "$0" && echo "Script is being run, should be sourced" && e
 # test $RUN_FLAG && echo "The environment has been loaded, do nothing" && return || RUN_FLAG=true
 
 ROOT_PATH=$(dirname $(readlink -f $BASH_SOURCE))
-PATH=$PATH:${ROOT_PATH}/runtime/runpath
+export PATH=${ROOT_PATH}/runtime/runpath:$PATH
 
 function run_backend()
 {(
@@ -78,5 +78,29 @@ function init_env()
     npm install
     set +e
 )}
+
+function build_all()
+{(
+    set -e
+    local BUILD_PATH="${ROOT_PATH}/build"
+    if [ -d "${BUILD_PATH}" ]; then
+         rm -rf ${BUILD_PATH}
+         mkdir ${BUILD_PATH}
+    else
+         mkdir ${BUILD_PATH}
+    fi
+    cd ${BUILD_PATH}
+    
+    # build frontend
+    # npm --prefix ${ROOT_PATH}/frontend/userlogin run build
+
+    # build python3
+    source ${ROOT_PATH}/backend/.venv/bin/activate
+    pyinstaller -F ${ROOT_PATH}/backend/manage.py --add-data="${ROOT_PATH}/backend/userlogin/frontend:userlogin/frontend"
+    cp -f ${ROOT_PATH}/backend/config.ini ${BUILD_PATH}/dist/
+    deactivate
+
+)}
+
 
 echo "Environment loading successful"
