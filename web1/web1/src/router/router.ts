@@ -26,7 +26,7 @@ const router = createRouter({
 })
 
 // 全局前置守卫,拦截未登录用户
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   if (to.meta.anonymousAccess) {
     return
   }

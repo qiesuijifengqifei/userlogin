@@ -7,10 +7,12 @@ config = configparser.ConfigParser()
 config.read(config_path, encoding="utf-8")
 
 data_path = app_path() + 'data/'
+
 default_user = config['db']['user']
 default_password = config['db']['password']
-flask_port = config['flask']['port']
-flask_debug = bool(config['flask']['debug'])
+app_port = config['app']['port']
+app_host = config['app']['host']
+app_threads = config['app']['threads']
 
 def do_config():
 

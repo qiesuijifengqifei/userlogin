@@ -51,4 +51,6 @@ pip3 freeze > requirements.txt
 # 依赖
 # pip3 install flask-cors # 解决跨域
 
+# 复杂项目可使用 gunicorn 进行部署
+# pip3 install waitress # 这里使用 waitress 部署,轻量且可进行打包
 

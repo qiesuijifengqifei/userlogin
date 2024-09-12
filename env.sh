@@ -10,7 +10,7 @@ export PATH=${ROOT_PATH}/runtime/runpath:$PATH
 function run_backend()
 {(
     source ${ROOT_PATH}/backend/.venv/bin/activate
-    python3 ${ROOT_PATH}/backend/manage.py &
+    python3 ${ROOT_PATH}/backend/manage.py dev &
     deactivate
 )}
 
@@ -79,27 +79,52 @@ function init_env()
     set +e
 )}
 
-function build_all()
+function build()
 {(
     set -e
+    local arg=$1
     local BUILD_PATH="${ROOT_PATH}/build"
-    if [ -d "${BUILD_PATH}" ]; then
-         rm -rf ${BUILD_PATH}
-         mkdir ${BUILD_PATH}
-    else
-         mkdir ${BUILD_PATH}
-    fi
+    function build_backend()
+    {(
+        # build python3
+        source ${ROOT_PATH}/backend/.venv/bin/activate
+        rm -rf ${BUILD_PATH}/{build,dist,manage.spec}
+        pyinstaller -F ${ROOT_PATH}/backend/manage.py --add-data="${ROOT_PATH}/backend/userlogin/frontend:userlogin/frontend"
+        cp -f ${ROOT_PATH}/backend/config.ini ${BUILD_PATH}/dist/
+        deactivate
+    )}
+    function build_frontend()
+    {(
+        # build frontend
+        rm -rf ${BUILD_PATH}/frontend
+        npm --prefix ${ROOT_PATH}/frontend/userlogin run build
+    )}
+    function build_web1()
+    {(
+        # build web1
+        rm -rf ${BUILD_PATH}/web1
+        npm --prefix ${ROOT_PATH}/web1/web1 run build
+    )}
+
+    mkdir -p ${BUILD_PATH}
     cd ${BUILD_PATH}
-    
-    # build frontend
-    # npm --prefix ${ROOT_PATH}/frontend/userlogin run build
 
-    # build python3
-    source ${ROOT_PATH}/backend/.venv/bin/activate
-    pyinstaller -F ${ROOT_PATH}/backend/manage.py --add-data="${ROOT_PATH}/backend/userlogin/frontend:userlogin/frontend"
-    cp -f ${ROOT_PATH}/backend/config.ini ${BUILD_PATH}/dist/
-    deactivate
-
+    case "${arg}" in
+        "backend"|"backend/")
+            build_backend
+        ;;
+        "frontend"|"frontend/")
+            build_frontend
+        ;;
+        "web1"|"web1/")
+            build_web1
+        ;;
+        *)
+            build_frontend
+            build_backend
+            build_web1
+        ;;
+    esac
 )}
 
 

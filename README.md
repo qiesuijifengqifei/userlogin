@@ -27,7 +27,7 @@
     init_env            # 安装项目调试运行的依赖
     run_all             # 运行项目 backend , frontend , web1
     stop_run            # 停止运行的所有项目
-    build_all           # 编译所有项目
+    build               # 编译所有项目
 
 ##### 编译
 build , runtime 为编译生成目录  

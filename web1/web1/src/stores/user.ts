@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, reactive } from 'vue'
-import axios from 'axios'
+import { reactive } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
   const userinfo = reactive({

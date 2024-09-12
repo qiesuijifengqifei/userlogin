@@ -6,7 +6,7 @@ from flask import Flask, make_response, jsonify, request, Response, render_templ
 from flask_cors import CORS
 from auth.runsqlite import CheckParameters,RunSqlite
 from functools import wraps
-import config.config
+
 
 app = Flask(__name__, template_folder='frontend', static_url_path='/', static_folder='frontend')
 # static_url_path 静态文件访问路径
@@ -209,7 +209,7 @@ def GetPage():
             else:
                 response_data["message"] = "token 验证失败,请重新登录"
                 response_data["data"]["isvalid"] = False
-
+            response_data["status"] = 200
             res = make_response(jsonify(response_data))
             res.headers["Content-Type"] = "text/json; charset=utf-8"
             res.status = 200
@@ -283,5 +283,4 @@ def modify():
             return json.dumps("{'message': '传入参数个数不正确'}", ensure_ascii=False)
     return json.dumps("{'message': '未知错误'}", ensure_ascii=False)
 
-def runapp():
-    app.run(host='0.0.0.0', port=config.config.flask_port, debug=config.config.flask_debug)
+

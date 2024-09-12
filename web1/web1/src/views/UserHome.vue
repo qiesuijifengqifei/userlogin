@@ -29,8 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
-import axios from 'axios';
+import { request } from '../utils/request.ts'
 import { useUserStore } from '../stores/user';
 
 const userStore = useUserStore()
@@ -47,7 +46,7 @@ const clear_userStore = async () => {
 }
 
 const doLogout = async () => {
-  const response = await axios.post('/flask/api/logout', {}, {
+  const response = await request.post('/api/logout', {}, {
     headers: {
       'token': userStore.userinfo.token
     }
@@ -67,16 +66,16 @@ const checkToken = async () => {
     console.log("未获取到 token ,请先登录")
   } 
   else {
-    const response = await axios.post('/flask/api/userinfo', {}, {
+    const response = await request.post('/api/userinfo', {}, {
       headers: {
         'token': userStore.userinfo.token
       }
     });
     console.log(response)
     if (response.status == 200) {
-      if (response.data?.data?.isvalid !== undefined && response.data.data.isvalid) {
+      if (response.data?.isvalid !== undefined && response.data.isvalid) {
         userStore.userinfo.islogin = true
-        userStore.userinfo.username = response.data.data.username
+        userStore.userinfo.username = response.data.username
       }
       else{
         clear_userStore()
