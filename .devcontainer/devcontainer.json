@@ -19,7 +19,8 @@
                 "humao.rest-client",
                 "foxundermoon.shell-format",
                 "yy0931.vscode-sqlite3-editor",
-                "Vue.volar"
+                "Vue.volar",
+                "SS.element-ui-snippets"
             ]
         }
     },
