@@ -1,7 +1,7 @@
 import sys
 sys.path.append('..')
-from config import config
-import auth.initdb
+from config.config import Config
+from auth import initdb
 
-config.do_config()
-auth.initdb.init_db()
+Config.do_config()
+initdb.init_db()

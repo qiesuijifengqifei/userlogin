@@ -1,24 +1,29 @@
 import axios from 'axios';
 
 // 封装 axios
-const request = axios.create({
+const laxios = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 5 * 1000,
-  headers: { "Content-Type": "application/json;charset=UTF-8" }
+  // headers: { "Content-Type": "application/json;charset=UTF-8" }
+
+  // 后端使用 OAuth2PasswordRequestForm ,请求头不可使用 json
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+  }
+
 });
 
-
 // 数据请求拦截
-request.interceptors.request.use(
-  // 1. 返回config对象
+laxios.interceptors.request.use(
+  // 1. 返回 request 对象
   // 2. 可以设置携带 token 信息
-  (config) => {
+  (request) => {
     const userStore = window.localStorage.getItem('user');
-    if ( userStore != null ) {
-      const token = JSON.parse(userStore)['userinfo']['token'];
-      (config.headers.token = token);
+    if (userStore != null) {
+      const access_token = JSON.parse(userStore)['userinfo']['access_token'];
+      (request.headers.access_token = access_token );
     }
-    return config;
+    return request;
   },
   (err) => {
     return Promise.reject(err);
@@ -26,17 +31,20 @@ request.interceptors.request.use(
 );
 
 // 返回响应数据拦截
-request.interceptors.response.use(
+laxios.interceptors.response.use(
   (response) => {
     // console.log("request.js打印返回信息" , response);
     // 简化返回数据
-    return Promise.resolve(response.data);
+    return Promise.resolve(response);
   },
   // 错误执行
   (error) => {
     console.log("错误信息", error);
     if (error.response.status) {
       switch (error.response.status) {
+        case 401:
+          console.log("用户名或密码不正确！");
+          return Promise.reject(error.response);
         case 404:
           console.log("请求路径找不到！");
           break;
@@ -52,5 +60,4 @@ request.interceptors.response.use(
   }
 );
 
-// 暴露对象
-export { request };
+export { laxios };

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '../stores/user.ts';
-import { request } from '../utils/request.ts'
+import { laxios } from '../utils/laxios.ts'
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue';
 
@@ -17,6 +17,7 @@ const loginFormData = reactive({
   password: userStore.userinfo.password,
 })
 const [usernameError, passwordError] = [ref(''), ref('')]
+
 const doLogin = async () => {
   if (loginFormData.username === "") {
     return usernameError.value = "用户名不能为空"
@@ -29,9 +30,8 @@ const doLogin = async () => {
     passwordError.value = ""
   }
 
-
   try {
-    const response = await request.post('/api/login', loginFormData);
+    const response = await laxios.post('/api/login', loginFormData);
     // 登录成功处理逻辑，例如保存token等
     if (response.status == 200) {
       ElMessage({
@@ -40,14 +40,14 @@ const doLogin = async () => {
         plain: true,
       })
       userStore.userinfo.username = loginFormData.username
-      userStore.userinfo.token = response.data.token
-      if (!userStore.userinfo.rememberme) {
-        userStore.userinfo.password = ""
-      } else {
+      userStore.userinfo.access_token = response.data.access_token
+      if (userStore.userinfo.rememberme) {
         userStore.userinfo.password = loginFormData.password
+      } else {
+        userStore.userinfo.password = ""
       }
       if (rturl !== "") {
-        rturl = rturl + "?token=" + response.data.token
+        rturl = rturl + "?access_token=" + response.data.access_token
         window.location.replace(rturl);
       }
     }
@@ -56,8 +56,11 @@ const doLogin = async () => {
     }
 
 
-  } catch (error) {
+  } catch (error: any) {
     // 登录失败处理逻辑
+    if (error.status == 401) {
+      return passwordError.value = "密码错误"
+    }
     ElMessage({
       message: '登录失败',
       type: 'error',
@@ -81,7 +84,7 @@ const doLogin = async () => {
 
     <el-form-item>
       <el-checkbox v-model="userStore.userinfo.rememberme" label="记住密码" size="large" />
-      <el-button type="primary" @click="doLogin"> Login </el-button>
+      <el-button type="primary" @click="doLogin"> 登录 </el-button>
     </el-form-item>
 
   </el-form>
@@ -95,6 +98,7 @@ const doLogin = async () => {
 
 button {
   right: 0%;
-  position: absolute
+  position: absolute;
+  width: 80px
 }
 </style>

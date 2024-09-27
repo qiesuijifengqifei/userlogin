@@ -1,12 +1,21 @@
 
-POST http://127.0.0.1:8000/api/login HTTP/1.1
-content-type: application/json
+# POST http://127.0.0.1:8000/api/login HTTP/1.1
+# content-type: application/json
 
-{
-    "username":"root",
-    "password":"root",
-    "age":"26"
-}
+# {
+#     "grant_type": "password",
+#     "username": "root",
+#     "password": "root",
+#     "age": "26",
+# }
+
+
+POST http://127.0.0.1:8000/api/login HTTP/1.1
+content-type: application/x-www-form-urlencoded
+
+username=root
+&password=root
+
 
 POST http://127.0.0.1:8000/api/logout HTTP/1.1
 content-type: application/json

@@ -5,7 +5,7 @@ test "$BASH_SOURCE" = "$0" && echo "Script is being run, should be sourced" && e
 # test $RUN_FLAG && echo "The environment has been loaded, do nothing" && return || RUN_FLAG=true
 
 ROOT_PATH=$(dirname $(readlink -f $BASH_SOURCE))
-export PATH=${ROOT_PATH}/runtime/runpath:$PATH
+export PATH=${ROOT_PATH}/runtime/node_bin:${ROOT_PATH}/runtime/python3_bin:$PATH
 
 function run_backend()
 {(
@@ -32,13 +32,13 @@ function run_all()
 {(
     run_backend
     run_fronted
-    run_web1
+    # run_web1
 )}
 
 function stop_run()
 {(
     f_pids=$(ps -ef |grep "npm\|vite" |grep -v grep |awk '{print $2}')
-    b_pids=$(ps -ef |grep "python3 ${ROOT_PATH}/backend/manage.py" |grep -v grep |awk '{print $2}')
+    b_pids=$(ps -ef |grep "python3 ${ROOT_PATH}/backend/manage.py\|${ROOT_PATH}/backend/.venv/bin/python3" |grep -v grep|grep -v ".vscode-remote" |awk '{print $2}')
     if [[ -z ${f_pids} && -z ${b_pids} ]]; then
         echo "No running project"
     fi
@@ -88,9 +88,12 @@ function build()
     {(
         # build python3
         source ${ROOT_PATH}/backend/.venv/bin/activate
-        rm -rf ${BUILD_PATH}/{build,dist,manage.spec}
-        pyinstaller -F ${ROOT_PATH}/backend/manage.py --add-data="${ROOT_PATH}/backend/userlogin/frontend:userlogin/frontend"
-        cp -f ${ROOT_PATH}/backend/config.ini ${BUILD_PATH}/dist/
+        rm -rf ${BUILD_PATH}/{backend,backend_build,manage.spec}
+        pyinstaller -F ${ROOT_PATH}/backend/manage.py \
+        --add-data="${ROOT_PATH}/backend/userlogin/frontend:userlogin/frontend" \
+        --add-data="${ROOT_PATH}/backend/userlogin/templates:userlogin/templates" \
+        --distpath="backend" --workpath="backend_build" --specpath="backend_build" --hidden-import manage
+        cp -f ${ROOT_PATH}/backend/config.ini ${BUILD_PATH}/backend/
         deactivate
     )}
     function build_frontend()
@@ -120,9 +123,10 @@ function build()
             build_web1
         ;;
         *)
+            # build_web1 &
             build_frontend
             build_backend
-            build_web1
+            wait
         ;;
     esac
 )}
