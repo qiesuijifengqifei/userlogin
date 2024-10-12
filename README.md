@@ -3,7 +3,7 @@
 
 # 环境
     linux                       # ubuntu20.04 及以上版本
-    python3         (flask)     # python3.8 及以上版本
+    python3         (fastAPI)     # python3.8 及以上版本
     nodejs          (vue3)
 
 # 目录结构
@@ -31,8 +31,8 @@
 
 ##### 编译
 build , runtime 为编译生成目录  
-将 frontend 项目编译部署到 backend 项目中 ( vue3 项目部署到 flask )  
-flask 使用 pyinstaller 打包成一个可执行文件  
+将 frontend 项目编译部署到 backend 项目中 ( vue3 项目部署到 fastAPI )  
+fastAPI 使用 pyinstaller 打包成一个可执行文件  
 
 
 # 访问
