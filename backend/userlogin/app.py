@@ -1,26 +1,21 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from pydantic import BaseModel                                  # api 的模型定义
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm            # 设置登录请求表单格式
-from fastapi.middleware.cors import CORSMiddleware              # 设置响应体允许跨域
-from fastapi.responses import FileResponse, HTMLResponse
-from fastapi.staticfiles import StaticFiles
-import jwt
-import time
-from auth.runsqlite import verify_password
-import os
+from fastapi import FastAPI, Depends
 
-JWT_SECRET_KEY = "jiamimiyao"
-JWT_ALGORITHM = "HS256"
-JWT_TOKEN_EXPIRE = 3600 * 24 * 2
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/login')
+from fastapi.middleware.cors import CORSMiddleware  # 设置响应体允许跨域
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from .routers import users
+import os
 
 
 if os.path.exists(os.path.dirname(__file__) + "/frontend"):
     static_path = os.path.dirname(__file__) + "/frontend"
 else:
-    static_path = os.path.dirname(__file__) + "/templates" 
-        
+    static_path = os.path.dirname(__file__) + "/templates"
+
 app = FastAPI()
+
+app.include_router(users.router, prefix="/api", tags=["users"])
+
 app.mount(
     "/static",
     StaticFiles(directory=static_path, html=True),
@@ -28,6 +23,8 @@ app.mount(
 )
 
 # 设置 api 接口支持跨域
+# 浏览器必须首先使用 OPTIONS 方法发起一个预检请求（preflight request），
+# 从而获知服务端是否允许该跨域请求。服务器确认允许之后，才发起实际的 HTTP 请求。
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,36 +33,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 使用 OAuth2PasswordRequestForm 类要求返回此类
-# OAuth2PasswordRequestForm 请求体不能使用 json 传数据
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    
-
-def generate_jwt_token(username: str):
-    token_data = {
-        "username": username,
-        "expires": int(time.time()) + JWT_TOKEN_EXPIRE
-    }
-
-    encoded_jwt = jwt.encode(token_data, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
-    return encoded_jwt
 
 @app.get("/", response_class=FileResponse)
 @app.get("/login", response_class=FileResponse)
+@app.get("/home", response_class=FileResponse)                      # 解决前端路由页面直接刷新时访问不到
+@app.get("/{file_path:path}", response_class=FileResponse)          # 其他路径使用前端路由处理
 async def index():
     return static_path + "/index.html"
-
-@app.post("/api/login")
-async def login(login_form: OAuth2PasswordRequestForm = Depends()):
-    user = verify_password(login_form.username, login_form.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    token = generate_jwt_token(login_form.username)
-    
-    return Token(access_token=token, token_type="bearer")

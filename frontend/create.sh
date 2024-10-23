@@ -10,9 +10,9 @@ npm install
 npm run dev
 
 # package.json 记录了安装的包版本,并实时更新
-npm install axios               # 网络请求
+npm install axios                               # 网络请求
 npm install element-plus --save
-npm install pinia               # 状态管理
-npm install pinia-plugin-persistedstate       # 数据持久化
-# npm install vue-router@4
+npm install pinia                               # 状态管理
+npm install pinia-plugin-persistedstate         # 数据持久化
+npm install vue-router@4
 

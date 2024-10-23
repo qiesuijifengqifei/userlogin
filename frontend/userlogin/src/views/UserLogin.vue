@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '../stores/user.ts';
+import { setToken } from '../stores/token.ts';
 import { laxios } from '../utils/laxios.ts'
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue';
+import router from '../router/router.ts'
 
 let rturl = window.location.href.indexOf("?") != -1 ? window.location.href.split("?")[1].split("=")[1] : ""
 
@@ -40,7 +42,8 @@ const doLogin = async () => {
         plain: true,
       })
       userStore.userinfo.username = loginFormData.username
-      userStore.userinfo.access_token = response.data.access_token
+      setToken(response.data.access_token)
+      
       if (userStore.userinfo.rememberme) {
         userStore.userinfo.password = loginFormData.password
       } else {
@@ -49,6 +52,8 @@ const doLogin = async () => {
       if (rturl !== "") {
         rturl = rturl + "?access_token=" + response.data.access_token
         window.location.replace(rturl);
+      } else {
+        router.push('/home')
       }
     }
     else {

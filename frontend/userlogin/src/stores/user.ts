@@ -7,16 +7,17 @@ const useUserStore = defineStore(
     const userinfo = reactive({
       username: '',
       password: '',
-      access_token: '',
       rememberme: false
     })
     return { 
-      userinfo
+      userinfo,
     }
   },
   {
     persist: true,
   },
 )
+
+
 
 export { useUserStore }

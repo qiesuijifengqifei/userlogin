@@ -26,10 +26,11 @@ token: Rr1DMQmzfqtEkIYO7c2NbA6iLFynPTJxx
     "age":"26"
 }
 
-
-POST http://127.0.0.1:8000/api/userinfo HTTP/1.1
+# jwt_token 请求头使用该格式
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJleHBpcmVzIjoxNzI5NjY1MTE1fQ.18n63AugShDuT-opI1qjWQjJNaQh9SbNTbV-KAMiBRc
+GET http://127.0.0.1:8000/api/userinfo HTTP/1.1
 content-type: application/json
-token:MOR1mgUPqFoXLsB8hv4ZdnaciwT9Qrxk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJleHBpcmVzIjoxNzI5NjY1MTE1fQ.18n63AugShDuT-opI1qjWQjJNaQh9SbNTbV-KAMiBRc
 
 {
 
