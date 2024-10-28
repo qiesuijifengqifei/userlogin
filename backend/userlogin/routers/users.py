@@ -73,7 +73,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 # 登录接口,成功返回 jwt_token
-# login_form: OAuth2PasswordRequestForm = Depends() !!! Depends()依赖注入可传方法和类 login_form: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm) ,当使用类时,可使用简写模式
+# login_form: OAuth2PasswordRequestForm = Depends() !!! Depends()依赖注入可传方法和类 
+# login_form: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm) ,当使用类时,可使用简写模式
 @router.post("/login")
 async def login(login_form: OAuth2PasswordRequestForm = Depends()) -> Response_Token:
     user = users.verify_password(login_form.username, login_form.password)

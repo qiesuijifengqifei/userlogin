@@ -2,17 +2,19 @@
 前后端分离用户登录功能
 
 # 环境
-    linux                       # ubuntu20.04 及以上版本
+    linux           (ubuntu)      # ubuntu20.04 及以上版本
     python3         (fastAPI)     # python3.8 及以上版本
     nodejs          (vue3)
 
 # 目录结构
     ├── README.md
-    ├── backend             # python3项目
-    ├── frontend            # 用户登录页面
-    ├── web1                # web1项目
+    ├── backend             # python3 项目
+    ├── frontend            # vue3 用户登录页面
+    ├── web1                # web1 项目
     ├── scripts             # 项目 shell 脚本
-    └── env.sh              # 项目运行脚本
+    ├── build               # (编译时生成的目录)
+    ├── runtime             # (安装的运行环境目录)
+    └── porject.sh          # 项目脚本
 
 # 说明
 ##### 下载代码
@@ -20,17 +22,14 @@
     git clone https://github.com/qiesuijifengqifei/userlogin.git
 
 ##### 导入项目脚本
-    source env.sh
 
-    # 子命令含义
-    
-    init_env            # 安装项目调试运行的依赖
-    run_all             # 运行项目 backend , frontend , web1
-    stop_run            # 停止运行的所有项目
-    build               # 编译所有项目
+    source project.sh
+
+    project help
+
 
 ##### 编译
-build , runtime 为编译生成目录  
+
 将 frontend 项目编译部署到 backend 项目中 ( vue3 项目部署到 fastAPI )  
 fastAPI 使用 pyinstaller 打包成一个可执行文件  
 
