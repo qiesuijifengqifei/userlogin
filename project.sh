@@ -33,7 +33,11 @@ function project()
         "build")
             source ${SCRIPTS_PATH}/build_project.sh
             build_project ${type}
-        ;;        
+        ;;
+        "test")
+            source ${SCRIPTS_PATH}/test_project.sh
+            test_project ${type}
+        ;;
         "install")
             case "${type}" in
                 "runtime")
@@ -57,11 +61,12 @@ function project()
             echo -e "\t\t [ backend | frontend | all ]"
             echo -e "\t   [ stop ]"
             echo -e "\t\t [ backend | nodejs | all ]"
+            echo -e "\t   [ test ]"
             echo -e "\t   [ install ]"
             echo -e "\t\t [ runtime | module ]"
         ;;
         *)
-            echo "The first parameter supports options: [ run | stop | build | install ]"
+            echo "The first parameter supports options: [ run | stop | build | test | install ]"
             exit 0
         ;;
     esac

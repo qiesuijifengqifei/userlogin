@@ -13,7 +13,7 @@ function __project()
     case "${COMP_CWORD}" in
     # COMP_CWORD 类型为整数，当前输入的单词在 COMP_WORDS 中的索引
         1)
-            local opts="run stop build install"
+            local opts="run stop build test install"
              # 补全项字符串定义            
         ;;
         2)
@@ -32,7 +32,7 @@ function __project()
         3)
             case ${pre} in
             "module")
-                local opts="backend frontend all"
+                local opts="backend frontend pytest all"
                 ;;
             "runtime")
                 local opts="$(ls ${SCRIPTS_PATH}/install | cut -d'_' -f 2 | tr '\n' ' ' | sed 's/\.sh//g' | xargs echo -n all )"

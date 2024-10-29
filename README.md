@@ -11,6 +11,7 @@
     ├── backend             # python3 项目
     ├── frontend            # vue3 用户登录页面
     ├── web1                # web1 项目
+    ├── pytest              # 自动化测试
     ├── scripts             # 项目 shell 脚本
     ├── build               # (编译时生成的目录)
     ├── runtime             # (安装的运行环境目录)

@@ -20,7 +20,8 @@
                 "foxundermoon.shell-format",
                 "yy0931.vscode-sqlite3-editor",
                 "Vue.volar",
-                "SS.element-ui-snippets"
+                "SS.element-ui-snippets",
+                "ms-vscode.live-server"
             ]
         }
     },
