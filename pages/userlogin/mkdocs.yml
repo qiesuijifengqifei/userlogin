@@ -1,0 +1,33 @@
+site_name: USERLOGIN
+site_url: https://qiesuijifengqifei.github.io/userlogin/
+site_dir: ../../build/site
+
+repo_url: https://github.com/qiesuijifengqifei/userlogin
+
+theme:
+  name: material
+  # plugins:
+  #   - tags:
+  features: # 功能  
+    - navigation.tabs   # 顶级索引被作为tab
+  palette:
+    - media: "(prefers-color-scheme: dark)" # 深色
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+
+    - media: "(prefers-color-scheme: light)" # 浅色
+      scheme: default
+      primary: green
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+
+# Page tree
+nav:
+  - Home: index.md
+  - Download: download.md

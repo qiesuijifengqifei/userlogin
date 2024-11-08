@@ -1,0 +1,43 @@
+name: Build project
+on:
+  # # Allows you to run this workflow manually from the Actions tab
+  # 该配置需要在默认分支仓库才可触发
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # 不同 job 之间环境是隔离的
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12" # 设置 Python 版本
+      - name: Set up Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.7"
+      - name: Build backend & frontend
+        run: |
+          source project.sh
+          project install module all
+          project build all
+
+      - name: pytest
+        run: |
+          project test
+          tree -L 2 build
+
