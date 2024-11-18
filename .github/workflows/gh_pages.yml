@@ -41,12 +41,6 @@ jobs:
           path: build/site
           retention-days: 1
 
-      - name: clear github deployment
-        run: |
-          source scripts/api/gh_deployment.sh
-          del_deployment
-
-
   # 部署到 GitHub Pages
   deploy:
     env:
@@ -58,6 +52,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: mkdocs  # 这个 job 依赖于 mkdocs job 的成功
     steps:
+      - name: clear github deployment
+        run: |
+          source project.sh
+          project release del_deployment
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

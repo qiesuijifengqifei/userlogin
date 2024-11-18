@@ -6,12 +6,12 @@ test "$BASH_SOURCE" = "$0" && echo "Script is being run, should be sourced" && e
 export ROOT_PATH=$(dirname $(readlink -f $BASH_SOURCE))
 export RUNTIME_PATH=${ROOT_PATH}/runtime
 export SCRIPTS_PATH=${ROOT_PATH}/scripts
-
+export BUILD_PATH="${ROOT_PATH}/build"
 export PATH=${RUNTIME_PATH}/node/bin:${RUNTIME_PATH}/python3/bin:${RUNTIME_PATH}/allure/bin:$PATH
 
 source ${SCRIPTS_PATH}/project_completion.sh
 
-rvm_bash_nounset=
+# rvm_bash_nounset=
 # set -u # 报错bash: rvm_bash_nounset: unbound variable
 
 
@@ -20,39 +20,68 @@ function project()
     local action=$1
     local type=$2
     local type_opt=$3
+    set -eEu
+    function handler_error()
+    {
+        echo -e "\033[31m Error occurred. Terminating all processes. \033[0m"
+        kill 0
+    }
+    trap handler_error ERR
 
-    case "${action}" in
+    { case "${action}" in
         "run")
-            source ${SCRIPTS_PATH}/run_project.sh
-            run_project ${type}
+            bash ${SCRIPTS_PATH}/run_project.sh "run_project ${type}"
         ;;
         "stop")
-            source ${SCRIPTS_PATH}/stop_project.sh
-            stop_project ${type}
+            bash ${SCRIPTS_PATH}/stop_project.sh "stop_project ${type}"
         ;;
         "build")
-            source ${SCRIPTS_PATH}/build_project.sh
-            build_project ${type}
+            bash ${SCRIPTS_PATH}/build_project.sh "build_project ${type}"
         ;;
         "test")
-            source ${SCRIPTS_PATH}/test_project.sh
-            test_project ${type}
+            bash ${SCRIPTS_PATH}/test_project.sh "run_pytest"
+        ;;
+        "release")
+            case "${type}" in
+                "clean_dep")
+                    bash ${SCRIPTS_PATH}/release_project.sh "del_deployment"
+                ;;
+                "package")
+                    bash ${SCRIPTS_PATH}/release_project.sh "package"
+                ;;
+                "upload")
+                    bash ${SCRIPTS_PATH}/release_project.sh "upload_release"
+                ;;
+                *)
+                    echo "The second parameter supports options: [ clean_dep | package | upload ]"
+                ;;
+            esac
         ;;
         "install")
             case "${type}" in
                 "runtime")
-                    source ${SCRIPTS_PATH}/install_runtime.sh
-                    install_runtime "${type_opt}"
+                    bash ${SCRIPTS_PATH}/install_runtime.sh "install_runtime ${type_opt}"
                 ;;
                 "module")
-                    source ${SCRIPTS_PATH}/install_module.sh
-                    install_module "${type_opt}"
+                    bash ${SCRIPTS_PATH}/install_module.sh "install_module ${type_opt}"
                 ;;
                 *)
                     echo "The second parameter supports options: [ runtime | module ]"
                 ;;
             esac
-            
+        ;;
+        "set_pip3")
+            case "${type}" in
+                "default")
+                    bash ${SCRIPTS_PATH}/common/set_pip3.sh "set_pip3 default"
+                ;;
+                "tsinghua")
+                    bash ${SCRIPTS_PATH}/common/set_pip3.sh "set_pip3 tsinghua"
+                ;;
+                *)
+                    echo "The second parameter supports options: [ tsinghua | default ]"
+                ;;
+            esac
         ;;
         "help")
             echo -e "\n project [ run | stop | build | install ] \n"
@@ -69,8 +98,12 @@ function project()
             echo "The first parameter supports options: [ run | stop | build | test | install ]"
             exit 0
         ;;
-    esac
-    
+    esac ; } | 
+    if [[ "${action}" == "install" ]]; then
+        tee >( tr '\n' '\0' | xargs -0 -L 1 echo -e "\033[36m [INFO] \033[36m \033[0m") >/dev/null | cat -
+    else 
+        tee >(xargs -L 1 echo -e "\033[36m [INFO] \033[36m \033[0m") >/dev/null | cat -
+    fi
 )}
 
 echo "Environment loading successful"

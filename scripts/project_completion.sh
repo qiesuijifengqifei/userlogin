@@ -13,26 +13,32 @@ function __project()
     case "${COMP_CWORD}" in
     # COMP_CWORD 类型为整数，当前输入的单词在 COMP_WORDS 中的索引
         1)
-            local opts="run stop build test install"
              # 补全项字符串定义            
+            local opts="run stop build test release install set_pip3"
         ;;
         2)
             case ${pre} in
             "run" | "build")
-                local opts="backend frontend all"
+                local opts="backend frontend pages all"
                 ;;
             "stop")
                 local opts="backend nodejs all"
                 ;;
+            "release")
+                local opts="del_deployment package upload"
+                ;;
             "install")
                 local opts="module runtime"
+                ;;
+            "set_pip3")
+                local opts="default tsinghua"
                 ;;
             esac
         ;;
         3)
             case ${pre} in
             "module")
-                local opts="backend frontend pytest all"
+                local opts="backend frontend pytest pages all"
                 ;;
             "runtime")
                 local opts="$(ls ${SCRIPTS_PATH}/install | cut -d'_' -f 2 | tr '\n' ' ' | sed 's/\.sh//g' | xargs echo -n all )"

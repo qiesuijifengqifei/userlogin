@@ -14,16 +14,6 @@ source .venv/bin/activate       # 激活虚拟环境
 # !!! 使用 vscode 编码时,无法关联包,可点击右下角解释器,切换默认解释器到虚拟环境的 python3 
 
 
-
-pip3 config list -v
-
-echo "
-[global]                                                                    
-index-url = http://pypi.tuna.tsinghua.edu.cn/simple/
-trusted-host = pypi.tuna.tsinghua.edu.cn
-" > .venv/pip.conf              # 配置 pip 源
-
-
 mkdir userlogin && cd userlogin
 
 
