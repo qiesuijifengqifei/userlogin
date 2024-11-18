@@ -4,13 +4,12 @@ set -euo pipefail
 GITHUB_REPOSITORY=${GITHUB_REPOSITORY-"qiesuijifengqifei/userlogin"}
 
 # 配置变量
-TAG_NAME="v1.0.0"                         # 版本标签
-RELEASE_NAME="Release v1.0.0"             # 发布名称
-RELEASE_BODY="Description of the release" # 发布说明
-ASSET_PATH="build/backend/manage"         # 需要上传的附件文件路径（如果有）
+TAG_NAME=${TAG_NAME-"temp"}                                     # 版本标签
+RELEASE_NAME=${RELEASE_NAME-"Release ${TAG_NAME}"}              # 发布名称
+RELEASE_BODY="Description of the release"                       # 发布说明
+ASSET_PATH="${BUILD_PATH}/release/linux_amd64_userlogin.tar.gz"         # 需要上传的附件文件路径（如果有）
 ASSET_NAME=$(basename "${ASSET_PATH}")
 TARGET_COMMITISH=$(git rev-parse HEAD)    # 在此 commit id 上打 tag
-
 
 function curl()
 {(
@@ -83,7 +82,7 @@ function delete_asset()
         https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}
 }
 
-function do_release()
+function upload_release()
 {(
     # 根据 Tag 查找 Release
     existing_release=$(get_release | jq ".[] | select(.tag_name == \"$TAG_NAME\")")
@@ -114,5 +113,5 @@ function do_release()
             upload_asset "${release_id}" | jq -c
         fi
     fi
-
 )}
+$1

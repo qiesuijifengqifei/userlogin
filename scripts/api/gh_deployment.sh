@@ -12,3 +12,4 @@ function del_deployment()
     done
     
 )}
+$1

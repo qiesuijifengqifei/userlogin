@@ -1,8 +1,8 @@
 #!/bin/bash
+set -eu
 
 function install_all() 
 {(
-    set -eu
     if [ -d ${SCRIPTS_PATH}/install ]; then
         for install in ${SCRIPTS_PATH}/install/install_*.sh; do
             if [ -r $install ]; then
@@ -16,7 +16,6 @@ function install_all()
 
 function install_one()
 {(
-    set -eu
     local i_name=$1
     local file_name="${SCRIPTS_PATH}/install/install_${i_name}.sh"
     if [[ -r "${file_name}" ]]; then
@@ -29,8 +28,7 @@ function install_one()
 
 function install_runtime() 
 {(
-    set -eu
-    local i_type=$1
+    local i_type=${1-""}
     case "${i_type}" in
         "all"|"")
             install_all
@@ -40,4 +38,4 @@ function install_runtime()
         ;;        
     esac
 )}
-
+$1
