@@ -13,10 +13,11 @@
     ├── web1                # web1 项目
     ├── pytest              # 自动化测试
     ├── pages               # 项目介绍
+    ├── docker              # 构建 docker 镜像
     ├── scripts             # 项目 shell 脚本
     ├── build               # (编译时生成的目录)
     ├── runtime             # (安装的运行环境目录)
-    └── porject.sh          # 项目脚本
+    └── porject.sh          # 工具链
 
 # 说明
 ##### 下载代码
@@ -40,7 +41,6 @@ fastAPI 使用 pyinstaller 打包成一个可执行文件
     debug:
         backend: 8000
         frontend: 8081
-        web1: 8082
     
     deployed:
     http://127.0.0.1:8000

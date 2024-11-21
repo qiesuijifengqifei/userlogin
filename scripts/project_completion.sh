@@ -19,7 +19,7 @@ function __project()
         2)
             case ${pre} in
             "run" | "build")
-                local opts="backend frontend pages all"
+                local opts="backend frontend pages image all"
                 ;;
             "stop")
                 local opts="backend nodejs all"

@@ -1,0 +1,15 @@
+FROM python:3.12-alpine
+
+# 安装必需的库和构建工具
+RUN apk add --no-cache \
+    build-base \
+    libffi-dev \
+    musl-dev \
+    bash \
+    libxml2-dev \
+    libxslt-dev
+
+WORKDIR /work
+
+# 启动命令
+CMD ["bash"]

@@ -10,11 +10,13 @@ function build_project()
         source ${ROOT_PATH}/backend/.venv/bin/activate
         rm -rf ${BUILD_PATH}/{backend,backend_build}
         # --hidden-import 解决某些模块或包被动态导入但没有明确在代码中显示导入的问题
-        pyinstaller -F ${ROOT_PATH}/backend/manage.py \
+        pyinstaller -F --strip \
+        ${ROOT_PATH}/backend/manage.py \
         --name userlogin \
+        --hidden-import manage \
         --add-data="${ROOT_PATH}/backend/userlogin/frontend:userlogin/frontend" \
         --add-data="${ROOT_PATH}/backend/userlogin/templates:userlogin/templates" \
-        --distpath="backend" --workpath="backend_build" --specpath="backend_build" --hidden-import manage
+        --distpath="backend" --workpath="backend_build" --specpath="backend_build"
         cp -f ${ROOT_PATH}/backend/config.ini ${BUILD_PATH}/backend/
         deactivate
     )}
@@ -40,6 +42,36 @@ function build_project()
         deactivate
     )}
 
+    # build docker image
+    function build_image()
+    {(
+        GITHUB_REPOSITORY=${GITHUB_REPOSITORY-"qiesuijifengqifei/userlogin"}
+        function build_alpine()
+        {
+            export cmd='
+            pip3 install -r /backend/requirements.txt &&
+            pyinstaller -F --strip \
+            /backend/manage.py \
+            --name userlogin \
+            --hidden-import manage \
+            --add-data="/frontend:userlogin/frontend" \
+            --add-data="/backend/userlogin/templates:userlogin/templates"
+            '
+            docker compose -f builder.yml run --rm builder
+        }
+
+        cd ${ROOT_PATH}/docker
+        mkdir -p ${BUILD_PATH}/alpine
+
+        build_alpine
+
+        cp -f ${ROOT_PATH}/backend/config.ini ${BUILD_PATH}/alpine/
+        docker build -f Dockerfile -t ghcr.io/${GITHUB_REPOSITORY}:latest ${BUILD_PATH}/alpine/
+        docker save -o ${BUILD_PATH}/alpine/alpine_userlogin.tar ghcr.io/${GITHUB_REPOSITORY}:latest
+
+    )}
+
+
     mkdir -p ${BUILD_PATH}
     cd ${BUILD_PATH}
 
@@ -56,11 +88,15 @@ function build_project()
         "pages")
             build_pages
         ;;
+        "image")
+            build_image
+        ;;
         "all"|"")
             # build_web1 &
             build_pages &
-            build_frontend && build_backend &
-            
+            build_frontend
+            build_backend &
+            build_image &
             wait
         ;;
         *)

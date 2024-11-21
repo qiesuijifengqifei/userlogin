@@ -2,11 +2,14 @@ name: Deploy to Github Pages
 on:
   # # Allows you to run this workflow manually from the Actions tab
   # 该配置需要在默认分支仓库才可触发
+  push:
+    tags:
+      - 'v*'  # 只会在以 v 开头的标签（例如 v1.0.0）推送时触发
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Build project"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Build project"]
+  #   types:
+  #     - completed
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -19,7 +22,8 @@ jobs:
 # 不同 job 之间环境是隔离的
   mkdocs:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}   # 只有在 workflow_run 成功时才执行
+    # # 只有在 workflow_run 成功时才执行
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

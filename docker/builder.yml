@@ -1,0 +1,14 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+    image: builder:alpine
+
+    volumes:
+      - ../backend:/backend
+      - ../build/frontend:/frontend
+      - ../build/alpine/:/work/dist
+
+    command: ["bash", "-c", "${cmd}"]
+    stdin_open: true
