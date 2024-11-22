@@ -8,6 +8,7 @@ theme:
   name: material
   # plugins:
   #   - tags:
+  # custom_dir: overrides
   features: # 功能  
     - navigation.tabs   # 顶级索引被作为tab
   palette:
@@ -27,7 +28,15 @@ theme:
         icon: material/toggle-switch
         name: Switch to dark mode
 
+
+# extra_css:
+  # - css/custom.css               # 引入自定义 CSS
+
+# extra_javascript:
+#   - js/custom.js                 # 引入自定义 JS（可选）
+
 # Page tree
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
   - Download: download.md

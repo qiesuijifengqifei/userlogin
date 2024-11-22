@@ -29,6 +29,11 @@ function run_pages()
     deactivate
 )}
 
+function run_image()
+{(
+    docker run --rm --name userlogin ghcr.io/${GITHUB_REPOSITORY}:latest
+)}
+
 function run_project()
 {(
     local type=${1-""}
@@ -42,12 +47,15 @@ function run_project()
         "pages")
             run_pages
         ;;
-        "all"|"")
+        "image")
+            run_image
+        ;;
+        "b_f"|"")
             run_backend
             run_frontend
         ;;
         *)
-            echo "Please output parameters: [ backend | frontend | pages | all ]"
+            echo "Please output parameters: [ backend | frontend | pages | image | b_f ]"
         ;;
     esac
     

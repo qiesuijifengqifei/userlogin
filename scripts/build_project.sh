@@ -100,7 +100,7 @@ function build_project()
             wait
         ;;
         *)
-            echo "Please output parameters: [ backend | frontend | all ]"
+            echo "Please output parameters: [ backend | frontend | pages | image | all ]"
     esac
 )}
 $1

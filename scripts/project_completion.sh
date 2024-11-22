@@ -18,11 +18,14 @@ function __project()
         ;;
         2)
             case ${pre} in
-            "run" | "build")
-                local opts="backend frontend pages image all"
+            "run")
+                local opts="backend frontend pages image b_f"
                 ;;
             "stop")
                 local opts="backend nodejs all"
+                ;;
+            "build")
+                local opts="backend frontend pages image all"
                 ;;
             "release")
                 local opts="del_deployment package upload"

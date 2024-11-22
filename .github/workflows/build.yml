@@ -4,7 +4,7 @@ on:
   # 该配置需要在默认分支仓库才可触发
   push:
     branches:
-      dev
+      - dev
     tags:
       - 'v*'  # 只会在以 v 开头的标签（例如 v1.0.0）推送时触发
   workflow_dispatch:

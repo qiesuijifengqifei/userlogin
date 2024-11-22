@@ -26,7 +26,12 @@ function project()
         echo -e "\033[31m Error occurred. Terminating all processes. \033[0m"
         kill 0
     }
-    trap handler_error ERR
+
+    # ERR (Bash 内部错误信号)
+    # SIGCHLD (子进程终止信号) (正常终止也会被捕获)
+    # SIGTERM (终止信号) (会打印多次信息)
+    # SIGINT (中断信号)
+    trap handler_error ERR SIGINT
 
     { case "${action}" in
         "run")
